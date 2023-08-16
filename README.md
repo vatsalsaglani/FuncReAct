@@ -35,8 +35,12 @@ PINECONE_ENV="YOUR_PINECONE_ENVIRONMENT_NAME"
 - Execute `run.py`
 
 ```
-python run.py
+python run.py --pinecone_index_name="YOUR_INDEX_NAME" --pinecone_namespace="NAMESPACE_IN_THE_INDEX|NO NEED IF NO NAMESPACE USED" --model_name="gpt-4"
 ```
+
+    - pinecone_index_name = Name of the index you want the agent to search in.
+    - pinecone_namespace = Provide the name of the namespace if used else don't use this argument.
+    - model_name = "gpt-4" by default. Provides the best performance and results.
 
 ## Note
 
