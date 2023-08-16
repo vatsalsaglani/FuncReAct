@@ -32,13 +32,13 @@ class FunctionCall:
             function_args = json.loads(function_call.get("arguments"))
             return function_name, function_args
         except AttributeError as err:
-            print(f"Exception: ", {response.choices[0].get("message")})
+            # print(f"Exception: ", {response.choices[0].get("message")})
             cnt += 1
             if cnt > 2:
                 raise Exception("Error getting function name and arguments!")
             return self.__call__(
                 message,
-                f"{system_prompt}.\nPlease call the relevant function.",
+                f"{system_prompt}.\nCALL A FUNCTION!.",
                 functions,
                 model,
             )
