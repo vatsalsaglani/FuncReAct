@@ -1,6 +1,5 @@
 import os
-import re
-import json
+import argparse
 from time import sleep
 from typing import List, Dict, Union
 
@@ -16,22 +15,46 @@ from react.completion import NormalCompletion, TokenPadding, StreamCompletion
 from react.func_call import FunctionCall
 
 
+parser = argparse.ArgumentParser(description="Run the ReAct bot with custom settings.")
+
+parser.add_argument(
+    "--pinecone_index_name",
+    default=None,
+    help="Name of the Pinecone index. Default is None.",
+)
+
+parser.add_argument(
+    "--pinecone_namespace",
+    default=None,
+    help="Name of the Pinecone namespace. Default is None.",
+)
+
+parser.add_argument(
+    "--model_name",
+    default="gpt-4",
+    help="Name of the model to be used. Default is 'gpt-4'.",
+)
+
+args = parser.parse_args()
+
+
 def clear_terminal():
     os.system("cls" if os.name == "nt" else "clear")
 
 
-token_padding = TokenPadding("gpt-4")
+model_name = args.model_name
+token_padding = TokenPadding(model_name)
 complete = NormalCompletion(OPENAI_API_KEY)
 stream_complete = StreamCompletion(OPENAI_API_KEY)
 fc = FunctionCall(OPENAI_API_KEY)
 search = SearchKnowledgeBase(
     PINECONE_API_KEY,
     PINECONE_ENV,
-    "arxiv",
-    "transformer-papers",
+    args.pinecone_index_name,
+    args.pinecone_namespace,
     complete,
     token_padding,
-    model="gpt-4",
+    model=model_name,
 )
 
 console = Console()
@@ -85,7 +108,7 @@ def reAct(question: str):
                 refresh_per_second=10,
                 transient=True,
             ):
-                fn, fa = fc(history, ReAct_Prompt, Functions.functions, "gpt-4")
+                fn, fa = fc(history, ReAct_Prompt, Functions.functions, model_name)
             history_calls.append({"fn": fn, "fa": fa})
             # print(f"""Function: {fn} | Arguments: {fa}""")
             log_function(fn, fa)
@@ -110,7 +133,7 @@ def reAct(question: str):
                     refresh_per_second=10,
                     transient=True,
                 ):
-                    fn, fa = fc(history, ReAct_Prompt, Functions.functions, "gpt-4")
+                    fn, fa = fc(history, ReAct_Prompt, Functions.functions, model_name)
                 # print(f"""Function: {fn} | Arguments: {fa}""")
                 history_calls.append({"fn": fn, "fa": fa})
                 log_function(fn, fa)
@@ -123,7 +146,7 @@ def reAct(question: str):
                     refresh_per_second=10,
                     transient=True,
                 ):
-                    fn, fa = fc(history, ReAct_Prompt, Functions.functions, "gpt-4")
+                    fn, fa = fc(history, ReAct_Prompt, Functions.functions, model_name)
                 # print(f"""Function: {fn} | Arguments: {fa}""")
                 history_calls.append({"fn": fn, "fa": fa})
                 log_function(fn, fa)
@@ -137,7 +160,7 @@ def reAct(question: str):
                     refresh_per_second=10,
                     transient=True,
                 ):
-                    fn, fa = fc(history, ReAct_Prompt, Functions.functions, "gpt-4")
+                    fn, fa = fc(history, ReAct_Prompt, Functions.functions, model_name)
                 # print(f"""Function: {fn} | Arguments: {fa}""")
                 history_calls.append({"fn": fn, "fa": fa})
                 log_function(fn, fa)
@@ -165,7 +188,7 @@ def reAct(question: str):
                                 history,
                                 ReAct_Prompt,
                                 Functions.functions,
-                                "gpt-4",
+                                model_name,
                             )
                         history_calls.append({"fn": fn, "fa": fa})
                         log_function(fn, fa)
@@ -178,7 +201,7 @@ def reAct(question: str):
     message = f"""Question: `{question}` History: ```{history}```
     """
     final_answer = ""
-    for msg in stream_complete(message, ReAct_Answer_Prompt, "gpt-4"):
+    for msg in stream_complete(message, ReAct_Answer_Prompt, model_name):
         final_answer += msg
         clear_terminal()
         print(final_answer, end="", flush=True)
