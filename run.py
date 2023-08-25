@@ -41,7 +41,6 @@ args = parser.parse_args()
 def clear_terminal():
     os.system("cls" if os.name == "nt" else "clear")
 
-
 model_name = args.model_name
 token_padding = TokenPadding(model_name)
 complete = NormalCompletion(OPENAI_API_KEY)
