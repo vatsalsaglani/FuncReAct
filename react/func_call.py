@@ -1,6 +1,6 @@
 import json
 import openai
-from typing import List, Dict
+from typing import List, Dict, Union
 
 
 class FunctionCall:
@@ -13,6 +13,7 @@ class FunctionCall:
         system_prompt: str,
         functions: List[Dict],
         model: str,
+        function_call: Union[Dict, None] = None,
         cnt: int = 0,
     ):
         try:
@@ -24,7 +25,7 @@ class FunctionCall:
                 model=model,
                 messages=messages,
                 functions=functions,
-                function_call="auto",
+                function_call=function_call if function_call else "auto",
             )
             # print(response.choices[0].get("message"))
             function_call = response.choices[0].get("message").get("function_call")
